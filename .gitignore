@@ -1,0 +1,8 @@
+Makefile*
+debug
+release
+object_script*
+.qmake.stash
+*.pro.user*
+*.swp
+simulation
