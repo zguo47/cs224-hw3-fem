@@ -228,4 +228,8 @@ I start by saving the original positions and velocities. I then compute four inc
 I modified the shader.frag to add 3 additional lights and let the color of the light change with time. This is create a beautiful and smooth variation of colors in my visualiser.
 
 ## Video:
-![Alt Text](fem_video.mp4)
+
+
+https://github.com/brown-cs-224/fem-zguo47/assets/98437903/a0a7d457-ee4c-43aa-beae-c36a349ca65e
+
+
