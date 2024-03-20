@@ -55,6 +55,10 @@ private:
 
     bool m_capture;
 
+    float totaltime = 0.0f;
+
+    bool m_simulationPaused;
+
 private slots:
 
     // Physics Tick

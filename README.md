@@ -197,3 +197,35 @@ Cube falling on the floor.
 Ellipsoid falling on the floor with fixed sphere.
 
 ![Alt Text](example-video/ellipsoid.gif)
+
+
+## Extracting surface mesh
+To extract the surface mesh, first I initialize a vector 'faces'. I iter over all tets, and for each tet, I check whether each face of the tet is inside 'faces'.
+If yes, it means that this face is shared by other tets, so it can't be on the surface. I then erase the face from 'faces'. If not, I push the face into 'faces' for
+subsequent checking. In the end, I get a vector containing all surface faces. This is the face vector I would use to initialize my shape.
+
+## Computing and applying internal forces
+To calculate my internal foces, I follow the following step.
+First, in my init() method, I store the face areas and the face normals of the object in material space. I also initialize my forces, velocity and m_vertices, which are maps and vector to store the total forces on each vertex, velocity of each vertex, and the vertex positions.
+Second, I compute the deformation gradient F and the velocity gradient using the initial positions and current (world space) positions of a tet.
+Third, I compute Green's strain using the formula.
+Fourth, I compute stress using strain and strain rate, which is computed from the velocity gradient and F. 
+In the end, I use stress, normals, F, and face areas to compute the total internal force for each vertex and update them to the global forces map. 
+In my update() method, I call computeInternalForces(seconds), which computes the internal force in this time internal and update the forces map.
+
+## Collision resolution
+My collision handles collision with a ground plane and with a sphere. 
+For the ground, I check the y position of the falling object. If the y position is the same (or smaller) than the ground's y position (in world space), this indicates a collision going on. I will project the vertex out of the collider by resetting the y position, and then decomsing the velocity into a normal and tangential component. Then I reflect the normal component and scale by the restitution coefficient (between 0 and 1), also scaling the tangential component by friction coefficient (between 0 and 1). In the end the new velocity will be updated as the sum of these two components. 
+For the sphere part I assume the sphere to be a perfect sphere, which is, I use a implicit function to represent the sphere. Then I check to see if the object is penetrating the sphere by checking the distance to the center of the sphere. If the object penetrates, I perform the same logic as above to update the new velocity.
+
+## Integration method (midpoint method)
+First, I compute the gravitational forces and any other internal forces acting on the vertices for the current state. I save the current vertex positions and velocities. Then, for each vertex, calculate the acceleration based on the forces and divide the time step by two to find the midpoint time. Next, calculate the velocity at the midpoint, and the midpoint positions by adding to the original positions the product of midpoint velocity and half the time step. I then recalculate the gravitational and internal forces at this new midpoint state. Now, for each vertex, I recalculate the acceleration and what would be the velocity at the midpoint. I use this velocity to update the positions by adding to the original positions the velocity times the full time step (seconds), not the half step. In the end I update the velocities to use in the next round of update, and handle the collisions. 
+
+## Extra credit (RK4 method)
+I start by saving the original positions and velocities. I then compute four increments (k1 to k4) representing different estimates of the velocities and forces at various stages within the timestep. The first increment k1 is based on the initial state, k2 and k3 are based on the midpoint estimates (using half of the previous increments), and k4 is based on an estimate at the end of the timestep. After computing these increments, I combine them in a weighted sum to update the final velocities, with k1 and k4 being weighted less than k2 and k3. This combination aims to yield a more accurate solution by taking into account the rates of change at the start, two midpoints, and end of the timestep. Finally, I update the positions of the vertices using these new velocities and handle any resulting collisions.
+
+## Extra credit (more beautiful visualiser)
+I modified the shader.frag to add 3 additional lights and let the color of the light change with time. This is create a beautiful and smooth variation of colors in my visualiser.
+
+## Video:
+![Alt Text](fem_video.mp4)

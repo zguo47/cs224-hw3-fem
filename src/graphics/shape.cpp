@@ -109,15 +109,15 @@ void Shape::init(const std::vector<Eigen::Vector3d> &vertices, const std::vector
         m_blue = 1.f;
         m_alpha = 1.f;
     } else { //ground
-        m_red = 1;
-        m_green = 1;
-        m_blue = 1;
+        m_red = 0.76;
+        m_green = 0.49;
+        m_blue = 1.0;
         m_alpha = 1.f;
     }
-//    m_red = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-//    m_blue = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-//    m_green = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-//    m_alpha = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+   // m_red = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+   // m_blue = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+   // m_green = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+   // m_alpha = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 }
 
 void Shape::init(const std::vector<Eigen::Vector3d> &vertices, const std::vector<Eigen::Vector3i> &triangles, const std::vector<Eigen::Vector4i> &tetIndices)

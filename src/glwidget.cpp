@@ -21,7 +21,8 @@ GLWidget::GLWidget(QWidget *parent) :
     m_vertical(),
     m_lastX(),
     m_lastY(),
-    m_capture(false)
+    m_capture(false),
+    m_simulationPaused(true)
 {
     // GLWidget needs all mouse move events, not just mouse drag events
     setMouseTracking(true);
@@ -64,7 +65,7 @@ void GLWidget::initializeGL()
     m_sim.init();
 
     // Initialize camera with a reasonable transform
-    Eigen::Vector3f eye    = {0, 2, -5};
+    Eigen::Vector3f eye    = {0, 2, -9.5};
     Eigen::Vector3f target = {0, 1,  0};
     m_camera.lookAt(eye, target);
     m_camera.setOrbitPoint(target);
@@ -81,6 +82,12 @@ void GLWidget::paintGL()
     m_shader->setUniform("proj", m_camera.getProjection());
     m_shader->setUniform("view", m_camera.getView());
     m_sim.draw(m_shader);
+    m_shader->unbind();
+
+    // Get the current time
+    totaltime += m_deltaTimeProvider.elapsed() / 100.0f;
+    m_shader->bind();
+    m_shader->setUniform("time", totaltime);
     m_shader->unbind();
 }
 
@@ -143,6 +150,7 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
     case Qt::Key_R: m_vertical += SPEED; break;
     case Qt::Key_C: m_camera.toggleIsOrbiting(); break;
     case Qt::Key_T: m_sim.toggleWire(); break;
+    case Qt::Key_P: m_simulationPaused = !m_simulationPaused; break;
     case Qt::Key_Escape: QApplication::quit();
     }
 }
@@ -166,6 +174,8 @@ void GLWidget::keyReleaseEvent(QKeyEvent *event)
 
 void GLWidget::tick()
 {
+    if (m_simulationPaused) return;
+
     float deltaSeconds = m_deltaTimeProvider.restart() / 1000.f;
     m_sim.update(deltaSeconds);
 
